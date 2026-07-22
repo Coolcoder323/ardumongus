@@ -458,96 +458,81 @@ void handleMovement() {
 // --------------------------------------------------
 // ACTIONS
 // --------------------------------------------------
-void handleActions() {
-  if (impostorWin || crewmatesWin) return;
+void handleActions() { 
+    if (impostorWin || crewmatesWin) return; 
 
-  // Emergency meeting (DOWN + B)
-  if (!meetingCalled &&
-      arduboy.pressed(DOWN_BUTTON) &&
-      arduboy.justPressed(B_BUTTON)) {
-
-    bool someoneDead = false;
-    for (int i = 0; i < NUM_CREWMATES; i++)
-      if (!crewmates[i].alive) someoneDead = true;
-
-    if (someoneDead) {
-      meetingCalled = true;
-
-      // –5 suspicion for all crewmates
-      for (int k = 0; k < NUM_CREWMATES; k++) {
-        crewmates[k].suspicion -= 5;
-        if (crewmates[k].suspicion < 0) crewmates[k].suspicion = 0;
-      }
-    }
-  }
-
-  if (meetingCalled) return;
-
-  // Kill (B)
-  if (!inVent && arduboy.justPressed(B_BUTTON)) {
-    for (int i = 0; i < NUM_CREWMATES; i++) {
-      if (crewmates[i].alive &&
-          crewmates[i].roomRow == roomRow &&
-          crewmates[i].roomCol == roomCol &&
-          near(playerX, playerY, crewmates[i].x, crewmates[i].y)) {
-
-        crewmates[i].alive = false;
-
-        // witnesses +20 suspicion
-        for (int w = 0; w < NUM_CREWMATES; w++) {
-          if (crewmates[w].alive &&
-              crewmates[w].roomRow == roomRow &&
-              crewmates[w].roomCol == roomCol) {
-
-            crewmates[w].suspicion += 20;
-          }
+    // Emergency meeting (DOWN + B) 
+    if (!meetingCalled && arduboy.pressed(DOWN_BUTTON) && arduboy.justPressed(B_BUTTON)) { 
+        bool someoneDead = false; 
+        for (int i = 0; i < NUM_CREWMATES; i++) {
+            if (!crewmates[i].alive) someoneDead = true; 
         }
+        if (someoneDead) { 
+            meetingCalled = true; 
+            // –5 suspicion for all crewmates 
+            for (int k = 0; k < NUM_CREWMATES; k++) { 
+                crewmates[k].suspicion -= 5; 
+                if (crewmates[k].suspicion < 0) crewmates[k].suspicion = 0; 
+            } 
+        } 
+    } 
 
-        return;
-      }
-    }
-  }
+    if (meetingCalled) return; 
 
-  // Vent (A)
-  if (arduboy.justPressed(A_BUTTON) && ventCooldown == 0) {
+    // Kill (B) 
+    if (!inVent && arduboy.justPressed(B_BUTTON)) { 
+        for (int i = 0; i < NUM_CREWMATES; i++) { 
+            if (crewmates[i].alive && crewmates[i].roomRow == roomRow && crewmates[i].roomCol == roomCol && near(playerX, playerY, crewmates[i].x, crewmates[i].y)) { 
+                crewmates[i].alive = false; 
+                // witnesses +20 suspicion 
+                for (int w = 0; w < NUM_CREWMATES; w++) { 
+                    if (crewmates[w].alive && crewmates[w].roomRow == roomRow && crewmates[w].roomCol == roomCol) { 
+                        crewmates[w].suspicion += 20; 
+                    } 
+                } 
+                return; 
+            } 
+        } 
+    } 
 
-    if (!inVent) {
-      int v = findNearestVent(roomRow, roomCol, playerX, playerY);
+    // Vent (A) 
+    if (arduboy.justPressed(A_BUTTON) && ventCooldown == 0) { 
+        int v = findNearestVent(roomRow, roomCol, playerX, playerY);
+        
+        if (!inVent) { 
+            // Check if a vent exists in this room and the player is near it before entering
+            if (v != -1 && near(playerX, playerY, vents[v].x, vents[v].y)) { 
+                inVent = true; 
+                playerX = vents[v].x; 
+                playerY = vents[v].y; 
+                ventCooldown = VENT_COOLDOWN_FRAMES; 
+                return; 
+            } 
+        } else { 
+            // When exiting, transport player to the linked vent destination
+            if (v != -1) { 
+                int destVent = vents[v].linkA; // Or your custom transit layout logic
+                roomRow = vents[destVent].row; 
+                roomCol = vents[destVent].col; 
+                playerX = vents[destVent].x; 
+                playerY = vents[destVent].y; 
+                inVent = false; 
+                ventCooldown = VENT_COOLDOWN_FRAMES; 
+                return; 
+            } 
+        } 
+    } 
 
-      if (v != -1 && near(playerX, playerY, vents[v].x, vents[v].y)) {
-        inVent = true;
-        playerX = vents[v].x;
-        playerY = vents[v].y;
-        ventCooldown = VENT_COOLDOWN_FRAMES;
-        return;
-      }
-
-    } else {
-      int v = findNearestVent(roomRow, roomCol, playerX, playerY);
-
-      if (v != -1) {
-        int A = vents[v].linkA;
-
-        roomRow = vents[A].row;
-        roomCol = vents[A].col;
-        playerX = vents[A].x;
-        playerY = vents[A].y;
-
-        inVent = false;
-        ventCooldown = VENT_COOLDOWN_FRAMES;
-        return;
-      }
-    }
-  }
-
-  // Sabotage (UP + A)
-  if (!inVent && arduboy.pressed(UP_BUTTON) && arduboy.justPressed(A_BUTTON)) {
-    sabotageLights = !sabotageLights;
-    sabotageDoors = !sabotageDoors;
-    reactorMeltdown = !reactorMeltdown;
-
-    if (reactorMeltdown) meltdownTimer = MELTDOWN_START_FRAMES;
-  }
+    // Sabotage (UP + A) 
+    if (!inVent && arduboy.pressed(UP_BUTTON) && arduboy.justPressed(A_BUTTON)) { 
+        // Activate sabotage states explicitly instead of inversion toggles
+        sabotageLights = true; 
+        sabotageDoors = true; 
+        if (!reactorMeltdown) {
+            reactorMeltdown = true; 
+            meltdownTimer = MELTDOWN_START_FRAMES; 
+        }
+    } 
 }
 
 // --------------------------------------------------
