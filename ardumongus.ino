@@ -1,9 +1,11 @@
 #include <Arduboy2.h>
-Arduboy2 arduboy;
+#include <ArduboyTones.h>
 
-// --------------------------------------------------
-// PLACEHOLDER ROOM BITMAPS (128x64 blank images)
-// --------------------------------------------------
+Arduboy2 arduboy;
+Arduboy2Audio audio;
+ArduboyTones sound(audio.enabled);
+
+// Placeholders for your map bitmap data
 // Your existing bitmaps:
 const unsigned char PROGMEM cafitiria[] =
 {
@@ -123,9 +125,45 @@ const unsigned char PROGMEM medbay[] =
 0xff, 0xfe, 0xfe, 0xfc, 0xfc, 0xfc, 0xfc, 0xf8, 0xf8, 0xf8, 0xf8, 0xf8, 0xf0, 0xf0, 0xf0, 0xf0, 0xe0, 0xe0, 0xe0, 0xe0, 0xc1, 0xc1, 0xc1, 0xc1, 0x83, 0x83, 0x83, 0x83, 0x03, 0x07, 0x07, 0x07, 0x07, 0x0f, 0x0f, 0x0f, 0x0f, 0x1f, 0x1f, 0x1f, 0x1f, 0x3f, 0x3f, 0x3f, 0x3f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0xff, 0xff, 0xff, 0x8f, 0x07, 0x01, 0x80, 0xc0, 0xf0, 0xf0, 0xe0, 0xe0, 0xc0, 0xc1, 0x81, 0x83, 0x83, 0x83, 0x83, 0x81, 0xc1, 0xc0, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfc, 0xfc, 0x78, 0x70, 0x70, 0x70, 0x39, 0x3f, 0x3f, 0x3f, 0x1f, 0x1f, 0x1f, 0x1f, 0x0f, 0x0f, 0x0f, 0x0f, 0x07, 0x07, 0x07, 0x07, 0x03, 0x83, 0x83, 0x83, 0x83, 0xc1, 0xc1, 0xc1, 0xc1, 0xe0, 0xe0, 0xe0, 0xe0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf8, 0xf8, 0xf8, 0xf8, 0xf8, 0xfc, 0xfc, 0xfc, 0xfc, 0xfe, 0xfe, 0xff, 
 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfe, 0xfe, 0xfc, 0xfc, 0xfc, 0xfc, 0xf8, 0xf8, 0xf8, 0xf8, 0xf0, 0xf0, 0xf0, 0xf0, 0xe0, 0xe0, 0xe0, 0xe0, 0xc0, 0xc1, 0xc1, 0xc1, 0x81, 0x83, 0x83, 0x83, 0x83, 0x07, 0x07, 0x07, 0x07, 0x83, 0x83, 0x83, 0x83, 0x81, 0xc1, 0xc1, 0xc1, 0xc0, 0xe0, 0xe0, 0xe0, 0xe0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf8, 0xf8, 0xf8, 0xf8, 0xfc, 0xfc, 0xfc, 0xfc, 0xfe, 0xfe, 0xfe, 0xfe, 0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
 };
+
 // --------------------------------------------------
-// CONSTANTS
+// SOUND EFFECT TONES
 // --------------------------------------------------
+const uint16_t soundKill[] PROGMEM = {
+  NOTE_C4, 100, NOTE_G3, 100, NOTE_C3, 200, TONES_END
+};
+
+const uint16_t soundVent[] PROGMEM = {
+  NOTE_E3, 80, NOTE_G3, 80, NOTE_C4, 120, TONES_END
+};
+
+const uint16_t soundSabotage[] PROGMEM = {
+  NOTE_A4, 100, NOTE_F4, 100, NOTE_C4, 150, TONES_END
+};
+
+const uint16_t soundMeeting[] PROGMEM = {
+  NOTE_C5, 100, NOTE_E5, 100, NOTE_G5, 100, NOTE_C6, 300, TONES_END
+};
+
+const uint16_t soundWin[] PROGMEM = {
+  NOTE_C5, 100, NOTE_E5, 100, NOTE_G5, 100, NOTE_C6, 400, TONES_END
+};
+
+const uint16_t soundLose[] PROGMEM = {
+  NOTE_C4, 150, NOTE_G3, 150, NOTE_E3, 200, NOTE_C3, 400, TONES_END
+};
+
+// --------------------------------------------------
+// SPRITE BITMAPS (8x8 pixels)
+// --------------------------------------------------
+const unsigned char PROGMEM playerSprite[] = {
+  0x3c, 0x42, 0x9d, 0xb1, 0xb1, 0x9d, 0x42, 0x3c
+};
+
+const unsigned char PROGMEM crewmateSprite[] = {
+  0x3c, 0x42, 0x81, 0xbd, 0xbd, 0x81, 0x42, 0x3c
+};
+
 #define ROOM_W 128
 #define ROOM_H 64
 
@@ -137,6 +175,28 @@ const unsigned char PROGMEM medbay[] =
 
 #define VENT_COOLDOWN_FRAMES 90
 #define MELTDOWN_START_FRAMES 600
+#define MELTDOWN_COOLDOWN_FRAMES 1800 // 60 seconds at 30 FPS
+#define DOOR_SABOTAGE_FRAMES 300      // 10 seconds at 30 FPS
+
+// Game States
+enum GameState {
+  STATE_MENU,
+  STATE_INTRO,
+  STATE_INSTRUCTIONS,
+  STATE_SETTINGS,
+  STATE_PLAYING
+};
+
+GameState currentState = STATE_MENU;
+
+// Menu Variables
+int menuSelection = 0;
+int settingsSelection = 0;
+
+// Settings Options (Sound OFF by default)
+bool soundEnabled = false;
+int killCooldownOption = 1; // 0 = 5s (150f), 1 = 10s (300f), 2 = 15s (450f)
+int killCooldownMaxFrames = 300;
 
 // --------------------------------------------------
 // WORLD MAP
@@ -156,10 +216,10 @@ struct Crewmate {
   int roomRow, roomCol;
   int targetRow, targetCol;
 
-  int suspicion;   // invisible suspicion points
-  int tolerance;   // random threshold
+  int suspicion;   
+  int tolerance;   
 
-  bool gotBodySuspicion; // S‑ONCE flag
+  bool gotBodySuspicion; 
 };
 
 Crewmate crewmates[NUM_CREWMATES];
@@ -193,17 +253,33 @@ int playerY = 30;
 int roomRow = 1;
 int roomCol = 1;
 
+int playerSuspicion = 0;
+
 bool inVent = false;
 bool meetingCalled = false;
+int meetingTimer = 0; 
+int meetingResultTimer = 0;
+int ejectedID = -1;
 
-bool sabotageLights = false;
 bool sabotageDoors = false;
+int doorTimer = 0;
+
 bool reactorMeltdown = false;
 bool impostorWin = false;
 bool crewmatesWin = false;
+bool playerEjected = false;
 
 int meltdownTimer = MELTDOWN_START_FRAMES;
+int meltdownCooldown = 0;
 int ventCooldown = 0;
+int killCooldown = 300;
+
+// Helper function to play sound safely
+void playTone(const uint16_t *tones) {
+  if (soundEnabled) {
+    sound.tones(tones);
+  }
+}
 
 // --------------------------------------------------
 // HELPERS
@@ -238,17 +314,31 @@ void initGame() {
   playerY = 30;
   roomRow = 1;
   roomCol = 1;
+  playerSuspicion = 0;
 
   inVent = false;
   meetingCalled = false;
-  sabotageLights = false;
+  meetingTimer = 0;
+  meetingResultTimer = 0;
+  ejectedID = -1;
+
   sabotageDoors = false;
+  doorTimer = 0;
   reactorMeltdown = false;
   impostorWin = false;
   crewmatesWin = false;
+  playerEjected = false;
 
   meltdownTimer = MELTDOWN_START_FRAMES;
+  meltdownCooldown = 0;
   ventCooldown = 0;
+
+  // Set kill cooldown based on settings
+  if (killCooldownOption == 0) killCooldownMaxFrames = 150;      // 5s
+  else if (killCooldownOption == 1) killCooldownMaxFrames = 300; // 10s
+  else if (killCooldownOption == 2) killCooldownMaxFrames = 450; // 15s
+
+  killCooldown = killCooldownMaxFrames;
 
   for (int i = 0; i < NUM_CREWMATES; i++) {
     crewmates[i].x = random(10, ROOM_W - 10);
@@ -265,16 +355,137 @@ void initGame() {
 }
 
 // --------------------------------------------------
+// MENU & GUI SYSTEM
+// --------------------------------------------------
+void handleMenuInput() {
+  if (arduboy.justPressed(UP_BUTTON)) {
+    menuSelection--;
+    if (menuSelection < 0) menuSelection = 2;
+  }
+  if (arduboy.justPressed(DOWN_BUTTON)) {
+    menuSelection++;
+    if (menuSelection > 2) menuSelection = 0;
+  }
+
+  if (arduboy.justPressed(A_BUTTON)) {
+    if (menuSelection == 0) {
+      initGame();
+      currentState = STATE_INTRO;
+    } else if (menuSelection == 1) {
+      currentState = STATE_INSTRUCTIONS;
+    } else if (menuSelection == 2) {
+      currentState = STATE_SETTINGS;
+    }
+  }
+}
+
+void drawMenu() {
+  arduboy.setCursor(2, 5);
+  arduboy.print(F("OPERATION:INVASION HALT"));
+
+  arduboy.setCursor(20, 24);
+  arduboy.print(menuSelection == 0 ? F("> START GAME") : F("  START GAME"));
+
+  arduboy.setCursor(20, 36);
+  arduboy.print(menuSelection == 1 ? F("> INSTRUCTIONS") : F("  INSTRUCTIONS"));
+
+  arduboy.setCursor(20, 48);
+  arduboy.print(menuSelection == 2 ? F("> SETTINGS") : F("  SETTINGS"));
+}
+
+void drawIntroScreen() {
+  arduboy.setCursor(28, 2);
+  arduboy.print(F("MISSION BRIEF"));
+
+  arduboy.setCursor(0, 14);
+  arduboy.print(F("You have invaded an"));
+  arduboy.setCursor(0, 23);
+  arduboy.print(F("alien ship, disguised"));
+  arduboy.setCursor(0, 32);
+  arduboy.print(F("as one of them. They"));
+  arduboy.setCursor(0, 41);
+  arduboy.print(F("are headed for Earth!"));
+
+  arduboy.setCursor(0, 54);
+  arduboy.print(F("Eliminate all aliens!"));
+
+  if (arduboy.justPressed(A_BUTTON)) {
+    currentState = STATE_PLAYING;
+  }
+}
+
+void drawInstructions() {
+  arduboy.setCursor(25, 2);
+  arduboy.print(F("- INSTRUCTIONS -"));
+
+  arduboy.setCursor(0, 14);
+  arduboy.print(F("D-Pad: Move Around"));
+  arduboy.setCursor(0, 24);
+  arduboy.print(F("B: Eliminate Alien"));
+  arduboy.setCursor(0, 34);
+  arduboy.print(F("A: Enter/Exit Vent"));
+  arduboy.setCursor(0, 44);
+  arduboy.print(F("UP+A: Sabotage"));
+  arduboy.setCursor(0, 54);
+  arduboy.print(F("DN+B: Report/Call"));
+
+  if (arduboy.justPressed(B_BUTTON) || arduboy.justPressed(A_BUTTON)) {
+    currentState = STATE_MENU;
+  }
+}
+
+void handleSettingsInput() {
+  if (arduboy.justPressed(UP_BUTTON)) {
+    settingsSelection--;
+    if (settingsSelection < 0) settingsSelection = 1;
+  }
+  if (arduboy.justPressed(DOWN_BUTTON)) {
+    settingsSelection++;
+    if (settingsSelection > 1) settingsSelection = 0;
+  }
+
+  if (settingsSelection == 0 && (arduboy.justPressed(LEFT_BUTTON) || arduboy.justPressed(RIGHT_BUTTON) || arduboy.justPressed(A_BUTTON))) {
+    soundEnabled = !soundEnabled;
+  }
+
+  if (settingsSelection == 1) {
+    if (arduboy.justPressed(RIGHT_BUTTON) || arduboy.justPressed(A_BUTTON)) {
+      killCooldownOption = (killCooldownOption + 1) % 3;
+    }
+    if (arduboy.justPressed(LEFT_BUTTON)) {
+      killCooldownOption--;
+      if (killCooldownOption < 0) killCooldownOption = 2;
+    }
+  }
+
+  if (arduboy.justPressed(B_BUTTON)) {
+    currentState = STATE_MENU;
+  }
+}
+
+void drawSettings() {
+  arduboy.setCursor(30, 5);
+  arduboy.print(F("- SETTINGS -"));
+
+  arduboy.setCursor(10, 25);
+  arduboy.print(settingsSelection == 0 ? F("> SOUND: ") : F("  SOUND: "));
+  arduboy.print(soundEnabled ? F("ON") : F("OFF"));
+
+  arduboy.setCursor(10, 40);
+  arduboy.print(settingsSelection == 1 ? F("> KILL CD: ") : F("  KILL CD: "));
+  if (killCooldownOption == 0) arduboy.print(F("5s"));
+  else if (killCooldownOption == 1) arduboy.print(F("10s"));
+  else if (killCooldownOption == 2) arduboy.print(F("15s"));
+
+  arduboy.setCursor(15, 56);
+  arduboy.print(F("Press B to return"));
+}
+
+// --------------------------------------------------
 // CREWMATE BODY REPORTS + SUSPICION
 // --------------------------------------------------
 void checkBodyReports() {
-  if (meetingCalled || impostorWin || crewmatesWin) return;
-
-  bool someoneDead = false;
-  for (int i = 0; i < NUM_CREWMATES; i++)
-    if (!crewmates[i].alive) someoneDead = true;
-
-  if (!someoneDead) return;
+  if (meetingCalled || impostorWin || crewmatesWin || playerEjected) return;
 
   for (int i = 0; i < NUM_CREWMATES; i++) {
     if (!crewmates[i].alive) continue;
@@ -287,10 +498,11 @@ void checkBodyReports() {
           crewmates[j].roomCol == crewmates[i].roomCol &&
           near(crewmates[i].x, crewmates[i].y, crewmates[j].x, crewmates[j].y, 20)) {
 
-        crewmates[i].suspicion -= 5;
-        if (crewmates[i].suspicion < 0) crewmates[i].suspicion = 0;
-
         meetingCalled = true;
+        meetingTimer = 60;
+        meetingResultTimer = 0;
+        ejectedID = -1;
+        playTone(soundMeeting);
         return;
       }
     }
@@ -301,14 +513,22 @@ void checkBodyReports() {
 // CREWMATE UPDATE
 // --------------------------------------------------
 void updateCrewmates() {
-  if (meetingCalled || impostorWin || crewmatesWin) return;
+  if (meetingCalled || impostorWin || crewmatesWin || playerEjected) return;
+
+  int aliveCount = 0;
 
   for (int i = 0; i < NUM_CREWMATES; i++) {
     if (!crewmates[i].alive) continue;
+    aliveCount++;
 
     Crewmate &c = crewmates[i];
 
-    // S‑ONCE: +10 suspicion ONCE when entering room with dead body
+    if (inVent && c.roomRow == roomRow && c.roomCol == roomCol) {
+      if (near(playerX, playerY, c.x, c.y, 30)) {
+        playerSuspicion += 1;
+      }
+    }
+
     bool bodyInRoom = false;
     for (int j = 0; j < NUM_CREWMATES; j++) {
       if (!crewmates[j].alive &&
@@ -325,13 +545,6 @@ void updateCrewmates() {
       c.gotBodySuspicion = false;
     }
 
-    // suspicion > tolerance → force meeting
-    if (c.suspicion > c.tolerance) {
-      meetingCalled = true;
-      return;
-    }
-
-    // movement
     if (c.roomRow == c.targetRow && c.roomCol == c.targetCol) {
       c.targetRow = random(0, MAP_ROWS);
       c.targetCol = random(0, MAP_COLS);
@@ -374,6 +587,11 @@ void updateCrewmates() {
       }
     }
   }
+
+  if (aliveCount == 0 && !impostorWin) {
+    impostorWin = true;
+    playTone(soundWin);
+  }
 }
 
 // --------------------------------------------------
@@ -386,9 +604,10 @@ void crewmatesFixMeltdown() {
     if (!crewmates[i].alive) continue;
 
     if (crewmates[i].roomRow == 1 && crewmates[i].roomCol == 0) {
-      if (random(0, 100) < 75) {
+      if (random(0, 100) < 90) {
         reactorMeltdown = false;
         meltdownTimer = MELTDOWN_START_FRAMES;
+        meltdownCooldown = MELTDOWN_COOLDOWN_FRAMES; // Start 60s cooldown
         return;
       }
     }
@@ -399,7 +618,7 @@ void crewmatesFixMeltdown() {
 // MOVEMENT
 // --------------------------------------------------
 void handleMovement() {
-  if (meetingCalled || impostorWin || crewmatesWin) return;
+  if (meetingCalled || impostorWin || crewmatesWin || playerEjected) return;
 
   if (!inVent) {
     int speed = 1;
@@ -421,34 +640,22 @@ void handleMovement() {
   int doorY2 = ROOM_H/2 + 8;
 
   if (!sabotageDoors && !inVent) {
-    if (playerY <= 0 &&
-        playerX >= doorX1 && playerX <= doorX2 &&
-        roomRow > 0)
-    {
+    if (playerY <= 0 && playerX >= doorX1 && playerX <= doorX2 && roomRow > 0) {
       roomRow--;
       playerY = ROOM_H - 10;
     }
 
-    if (playerY >= ROOM_H - 8 &&
-        playerX >= doorX1 && playerX <= doorX2 &&
-        roomRow < MAP_ROWS - 1)
-    {
+    if (playerY >= ROOM_H - 8 && playerX >= doorX1 && playerX <= doorX2 && roomRow < MAP_ROWS - 1) {
       roomRow++;
       playerY = 2;
     }
 
-    if (playerX <= 0 &&
-        playerY >= doorY1 && playerY <= doorY2 &&
-        roomCol > 0)
-    {
+    if (playerX <= 0 && playerY >= doorY1 && playerY <= doorY2 && roomCol > 0) {
       roomCol--;
       playerX = ROOM_W - 10;
     }
 
-    if (playerX >= ROOM_W - 8 &&
-        playerY >= doorY1 && playerY <= doorY2 &&
-        roomCol < MAP_COLS - 1)
-    {
+    if (playerX >= ROOM_W - 8 && playerY >= doorY1 && playerY <= doorY2 && roomCol < MAP_COLS - 1) {
       roomCol++;
       playerX = 2;
     }
@@ -459,7 +666,7 @@ void handleMovement() {
 // ACTIONS
 // --------------------------------------------------
 void handleActions() { 
-    if (impostorWin || crewmatesWin) return; 
+    if (impostorWin || crewmatesWin || playerEjected) return; 
 
     // Emergency meeting (DOWN + B) 
     if (!meetingCalled && arduboy.pressed(DOWN_BUTTON) && arduboy.justPressed(B_BUTTON)) { 
@@ -469,25 +676,26 @@ void handleActions() {
         }
         if (someoneDead) { 
             meetingCalled = true; 
-            // –5 suspicion for all crewmates 
-            for (int k = 0; k < NUM_CREWMATES; k++) { 
-                crewmates[k].suspicion -= 5; 
-                if (crewmates[k].suspicion < 0) crewmates[k].suspicion = 0; 
-            } 
+            meetingTimer = 60;
+            meetingResultTimer = 0;
+            ejectedID = -1;
+            playTone(soundMeeting);
         } 
     } 
 
     if (meetingCalled) return; 
 
     // Kill (B) 
-    if (!inVent && arduboy.justPressed(B_BUTTON)) { 
+    if (!inVent && killCooldown == 0 && arduboy.justPressed(B_BUTTON)) { 
         for (int i = 0; i < NUM_CREWMATES; i++) { 
             if (crewmates[i].alive && crewmates[i].roomRow == roomRow && crewmates[i].roomCol == roomCol && near(playerX, playerY, crewmates[i].x, crewmates[i].y)) { 
                 crewmates[i].alive = false; 
-                // witnesses +20 suspicion 
+                killCooldown = killCooldownMaxFrames;
+                playTone(soundKill);
+                
                 for (int w = 0; w < NUM_CREWMATES; w++) { 
                     if (crewmates[w].alive && crewmates[w].roomRow == roomRow && crewmates[w].roomCol == roomCol) { 
-                        crewmates[w].suspicion += 20; 
+                        playerSuspicion += 25; 
                     } 
                 } 
                 return; 
@@ -500,116 +708,170 @@ void handleActions() {
         int v = findNearestVent(roomRow, roomCol, playerX, playerY);
         
         if (!inVent) { 
-            // Check if a vent exists in this room and the player is near it before entering
             if (v != -1 && near(playerX, playerY, vents[v].x, vents[v].y)) { 
                 inVent = true; 
                 playerX = vents[v].x; 
                 playerY = vents[v].y; 
                 ventCooldown = VENT_COOLDOWN_FRAMES; 
+                playTone(soundVent);
+
+                for (int w = 0; w < NUM_CREWMATES; w++) {
+                    if (crewmates[w].alive && crewmates[w].roomRow == roomRow && crewmates[w].roomCol == roomCol) {
+                        playerSuspicion += 15;
+                    }
+                }
                 return; 
             } 
         } else { 
-            // When exiting, transport player to the linked vent destination
             if (v != -1) { 
-                int destVent = vents[v].linkA; // Or your custom transit layout logic
+                int destVent = vents[v].linkA; 
                 roomRow = vents[destVent].row; 
                 roomCol = vents[destVent].col; 
                 playerX = vents[destVent].x; 
                 playerY = vents[destVent].y; 
                 inVent = false; 
                 ventCooldown = VENT_COOLDOWN_FRAMES; 
+                playTone(soundVent);
                 return; 
             } 
         } 
     } 
 
-    // Sabotage (UP + A) 
+    // Sabotage Doors/Reactor (UP + A)
     if (!inVent && arduboy.pressed(UP_BUTTON) && arduboy.justPressed(A_BUTTON)) { 
-        // Activate sabotage states explicitly instead of inversion toggles
-        sabotageLights = true; 
         sabotageDoors = true; 
-        if (!reactorMeltdown) {
+        doorTimer = DOOR_SABOTAGE_FRAMES; 
+        if (!reactorMeltdown && meltdownCooldown == 0) {
             reactorMeltdown = true; 
             meltdownTimer = MELTDOWN_START_FRAMES; 
+            playTone(soundSabotage);
         }
     } 
 }
 
 // --------------------------------------------------
-// MELTDOWN TIMER
+// TIMERS UPDATE
 // --------------------------------------------------
-void updateMeltdown() {
-  if (reactorMeltdown && !meetingCalled && !impostorWin && !crewmatesWin) {
-    if (meltdownTimer > 0) meltdownTimer--;
-    else impostorWin = true;
+void updateTimers() {
+  if (sabotageDoors) {
+    if (doorTimer > 0) {
+      doorTimer--;
+    } else {
+      sabotageDoors = false; 
+    }
+  }
+
+  if (reactorMeltdown && !meetingCalled && !impostorWin && !crewmatesWin && !playerEjected) {
+    if (meltdownTimer > 0) {
+      meltdownTimer--;
+    } else {
+      impostorWin = true;
+      playTone(soundWin);
+    }
+  }
+
+  if (meltdownCooldown > 0 && !reactorMeltdown) {
+    meltdownCooldown--;
   }
 }
 
 // --------------------------------------------------
-// MEETING RESOLUTION (V1 voting)
+// MEETING RESOLUTION
 // --------------------------------------------------
 void resolveMeeting() {
   if (!meetingCalled) return;
 
-  int votesOnPlayer = 0;
-  int votesOnCrew[NUM_CREWMATES];
-  for (int i = 0; i < NUM_CREWMATES; i++) votesOnCrew[i] = 0;
-
-  for (int i = 0; i < NUM_CREWMATES; i++) {
-    if (!crewmates[i].alive) continue;
-
-    Crewmate &c = crewmates[i];
-
-    int voteTarget = -1; // -1 skip, -2 player, 0..N-1 crewmate
-
-    if (c.suspicion > c.tolerance) {
-      // high suspicion → vote player
-      voteTarget = -2;
-    } else if (c.suspicion > c.tolerance / 2) {
-      // medium suspicion → vote random crewmate
-      int idx = random(0, NUM_CREWMATES);
-      while (!crewmates[idx].alive || idx == i) {
-        idx = random(0, NUM_CREWMATES);
-      }
-      voteTarget = idx;
-    } else {
-      // low suspicion → skip
-      voteTarget = -1;
-    }
-
-    if (voteTarget == -2) votesOnPlayer++;
-    else if (voteTarget >= 0) votesOnCrew[voteTarget]++;
-  }
-
-  int aliveCount = 0;
-  for (int i = 0; i < NUM_CREWMATES; i++)
-    if (crewmates[i].alive) aliveCount++;
-
-  int majority = (aliveCount / 2) + 1;
-
-  // eject player
-  if (votesOnPlayer >= majority) {
-    crewmatesWin = true;
-    meetingCalled = false;
+  if (meetingTimer > 0) {
+    meetingTimer--;
     return;
   }
 
-  // eject crewmate
-  // eject crewmate
-  int bestCrew = -1;
-  int bestVotes = 0;
-  for (int i = 0; i < NUM_CREWMATES; i++) {
-    if (votesOnCrew[i] > bestVotes) {
-      bestVotes = votesOnCrew[i];
-      bestCrew = i;
+  if (meetingResultTimer == 0 && ejectedID == -1) {
+    int votesOnPlayer = 0;
+    int votesOnCrew[NUM_CREWMATES] = {0};
+
+    for (int i = 0; i < NUM_CREWMATES; i++) {
+      if (!crewmates[i].alive) continue;
+
+      Crewmate &c = crewmates[i];
+      int voteTarget = -1;
+
+      if (playerSuspicion > c.tolerance) {
+        voteTarget = -2;
+      } else if (c.suspicion > c.tolerance) {
+        int aliveCrew[NUM_CREWMATES];
+        int count = 0;
+        for (int k = 0; k < NUM_CREWMATES; k++) {
+          if (crewmates[k].alive && k != i) {
+            aliveCrew[count++] = k;
+          }
+        }
+        if (count > 0) {
+          voteTarget = aliveCrew[random(0, count)];
+        } else {
+          voteTarget = -1;
+        }
+      } else {
+        voteTarget = -1;
+      }
+
+      if (voteTarget == -2) votesOnPlayer++;
+      else if (voteTarget >= 0) votesOnCrew[voteTarget]++;
+    }
+
+    int aliveCount = 0;
+    for (int i = 0; i < NUM_CREWMATES; i++) {
+      if (crewmates[i].alive) aliveCount++;
+    }
+
+    int majority = (aliveCount / 2) + 1;
+
+    if (votesOnPlayer >= majority) {
+      ejectedID = -2;
+    } else {
+      int bestCrew = -1;
+      int bestVotes = 0;
+      for (int i = 0; i < NUM_CREWMATES; i++) {
+        if (votesOnCrew[i] > bestVotes) {
+          bestVotes = votesOnCrew[i];
+          bestCrew = i;
+        }
+      }
+
+      if (bestCrew != -1 && bestVotes >= majority) {
+        ejectedID = bestCrew;
+      } else {
+        ejectedID = -3;
+      }
+    }
+
+    meetingResultTimer = 90;
+  }
+
+  if (meetingResultTimer > 0) {
+    meetingResultTimer--;
+    if (meetingResultTimer == 0) {
+      for (int i = 0; i < NUM_CREWMATES; i++) {
+        if (!crewmates[i].alive) {
+          crewmates[i].roomRow = -1;
+          crewmates[i].roomCol = -1;
+        }
+      }
+
+      if (ejectedID == -2) {
+        playerEjected = true;
+        crewmatesWin = true;
+        playTone(soundLose);
+      } else if (ejectedID >= 0) {
+        crewmates[ejectedID].alive = false;
+        crewmates[ejectedID].roomRow = -1;
+        crewmates[ejectedID].roomCol = -1;
+      }
+
+      killCooldown = killCooldownMaxFrames;
+      meetingCalled = false;
     }
   }
-
-  if (bestCrew != -1 && bestVotes >= majority) {
-    crewmates[bestCrew].alive = false;
-  }
-
-  meetingCalled = false;
 }
 
 // --------------------------------------------------
@@ -641,24 +903,41 @@ void drawEntities() {
 
   if (meetingCalled) {
     arduboy.fillRect(0, 0, ROOM_W, ROOM_H, BLACK);
-    arduboy.setCursor(10, 20);
-    arduboy.print(F("EMERGENCY MEETING"));
-    arduboy.setCursor(10, 35);
-    arduboy.print(F("Voting..."));
+
+    if (meetingTimer > 0) {
+      arduboy.setCursor(10, 20);
+      arduboy.print(F("EMERGENCY MEETING"));
+      arduboy.setCursor(30, 35);
+      arduboy.print(F("Voting..."));
+    } else {
+      arduboy.setCursor(10, 15);
+      arduboy.print(F("VOTE RESULTS:"));
+
+      arduboy.setCursor(10, 35);
+      if (ejectedID == -2) {
+        arduboy.print(F("YOU WERE EJECTED!"));
+      } else if (ejectedID >= 0) {
+        arduboy.print(F("ALIEN "));
+        arduboy.print(ejectedID + 1);
+        arduboy.print(F(" EJECTED"));
+      } else {
+        arduboy.print(F("NO ONE WAS EJECTED"));
+      }
+    }
     return;
   }
 
-  // crewmates (alive)
+  // Draw Crewmates
   for (int i = 0; i < NUM_CREWMATES; i++) {
     if (crewmates[i].alive &&
         crewmates[i].roomRow == roomRow &&
         crewmates[i].roomCol == roomCol) {
 
-      arduboy.fillRect(crewmates[i].x, crewmates[i].y, 4, 4, BLACK);
+      arduboy.drawBitmap(crewmates[i].x, crewmates[i].y, crewmateSprite, 8, 8, BLACK);
     }
   }
 
-  // dead bodies (white X)
+  // Draw Dead Bodies
   for (int i = 0; i < NUM_CREWMATES; i++) {
     if (!crewmates[i].alive &&
         crewmates[i].roomRow == roomRow &&
@@ -666,12 +945,12 @@ void drawEntities() {
 
       int bx = crewmates[i].x;
       int by = crewmates[i].y;
-      arduboy.drawLine(bx,     by,     bx+4, by+4, WHITE);
-      arduboy.drawLine(bx+4,   by,     bx,   by+4, WHITE);
+      arduboy.drawLine(bx,   by,   bx+4, by+4, WHITE);
+      arduboy.drawLine(bx+4, by,   bx,   by+4, WHITE);
     }
   }
 
-  // vents
+  // Draw Vents
   for (int i = 0; i < NUM_VENTS; i++) {
     if (vents[i].row == roomRow && vents[i].col == roomCol) {
 
@@ -687,21 +966,33 @@ void drawEntities() {
     }
   }
 
-  if (sabotageLights) {
-    arduboy.fillRect(0, 0, ROOM_W, ROOM_H, BLACK);
+  // Draw Player
+  if (!inVent && !impostorWin && !crewmatesWin && !playerEjected) {
+    arduboy.drawBitmap(playerX, playerY, playerSprite, 8, 8, BLACK);
   }
 
-  if (!inVent && !impostorWin && !crewmatesWin) {
-    arduboy.fillRect(playerX, playerY, 8, 8, BLACK);
-  }
-
+  // Vent Cooldown Bar (Bottom Right)
   if (ventCooldown > 0) {
-    int w = map(ventCooldown, 0, VENT_COOLDOWN_FRAMES, 0, ROOM_W);
-    arduboy.drawRect(0, ROOM_H - 4, ROOM_W, 4, WHITE);
-    arduboy.fillRect(0, ROOM_H - 4, w, 4, WHITE);
+    int w = map(ventCooldown, 0, VENT_COOLDOWN_FRAMES, 0, 36);
+    arduboy.drawRect(88, ROOM_H - 4, 36, 4, WHITE);
+    arduboy.fillRect(88, ROOM_H - 4, w, 4, WHITE);
   }
 
-  if (reactorMeltdown && !impostorWin && !crewmatesWin) {
+  // Meltdown Sabotage Cooldown Bar (Bottom Center)
+  if (meltdownCooldown > 0 && !impostorWin && !crewmatesWin && !playerEjected) {
+    int w = map(meltdownCooldown, 0, MELTDOWN_COOLDOWN_FRAMES, 0, 36);
+    arduboy.drawRect(45, ROOM_H - 4, 36, 4, WHITE);
+    arduboy.fillRect(45, ROOM_H - 4, w, 4, WHITE);
+  }
+
+  // Kill Cooldown Bar (Bottom Left)
+  if (killCooldown > 0 && !impostorWin && !crewmatesWin && !playerEjected) {
+    int w = map(killCooldown, 0, killCooldownMaxFrames, 0, 36);
+    arduboy.drawRect(2, ROOM_H - 4, 36, 4, WHITE);
+    arduboy.fillRect(2, ROOM_H - 4, w, 4, WHITE);
+  }
+
+  if (reactorMeltdown && !impostorWin && !crewmatesWin && !playerEjected) {
     arduboy.setCursor(2, 2);
     arduboy.print(F("REACTOR MELTDOWN"));
     arduboy.setCursor(2, 12);
@@ -711,18 +1002,22 @@ void drawEntities() {
 
   if (impostorWin) {
     arduboy.fillRect(0, 0, ROOM_W, ROOM_H, BLACK);
-    arduboy.setCursor(20, 20);
-    arduboy.print(F("IMPOSTOR WINS"));
-    arduboy.setCursor(10, 35);
-    arduboy.print(F("Press A to restart"));
+    arduboy.setCursor(12, 12);
+    arduboy.print(F("ALIEN SHIP PURGED!"));
+    arduboy.setCursor(20, 26);
+    arduboy.print(F("Earth is saved!"));
+    arduboy.setCursor(10, 44);
+    arduboy.print(F("Press A to menu"));
   }
 
   if (crewmatesWin) {
     arduboy.fillRect(0, 0, ROOM_W, ROOM_H, BLACK);
-    arduboy.setCursor(20, 20);
-    arduboy.print(F("CREWMATES WIN"));
-    arduboy.setCursor(10, 35);
-    arduboy.print(F("Press A to restart"));
+    arduboy.setCursor(12, 12);
+    arduboy.print(F("YOU WERE EJECTED!"));
+    arduboy.setCursor(2, 26);
+    arduboy.print(F("Aliens reached Earth..."));
+    arduboy.setCursor(10, 44);
+    arduboy.print(F("Press A to menu"));
   }
 }
 
@@ -732,8 +1027,7 @@ void drawEntities() {
 void setup() {
   arduboy.begin();
   arduboy.setFrameRate(30);
-  randomSeed(arduboy.cpuLoad());
-  initGame();
+  randomSeed(analogRead(0));
 }
 
 void loop() {
@@ -741,26 +1035,50 @@ void loop() {
 
   arduboy.pollButtons();
 
-  // restart after win
-  if ((impostorWin || crewmatesWin) && arduboy.justPressed(A_BUTTON)) {
-    initGame();
+  if (currentState == STATE_MENU) {
+    handleMenuInput();
+    arduboy.clear();
+    drawMenu();
+    arduboy.display();
+  } 
+  else if (currentState == STATE_INTRO) {
+    arduboy.clear();
+    drawIntroScreen();
+    arduboy.display();
   }
+  else if (currentState == STATE_INSTRUCTIONS) {
+    arduboy.clear();
+    drawInstructions();
+    arduboy.display();
+  } 
+  else if (currentState == STATE_SETTINGS) {
+    handleSettingsInput();
+    arduboy.clear();
+    drawSettings();
+    arduboy.display();
+  } 
+  else if (currentState == STATE_PLAYING) {
+    if ((impostorWin || crewmatesWin || playerEjected) && arduboy.justPressed(A_BUTTON)) {
+      currentState = STATE_MENU;
+    }
 
-  handleMovement();
-  handleActions();
-  updateCrewmates();
-  checkBodyReports();
-  updateMeltdown();
-  crewmatesFixMeltdown();
+    handleMovement();
+    handleActions();
+    updateCrewmates();
+    checkBodyReports();
+    updateTimers();
+    crewmatesFixMeltdown();
 
-  if (ventCooldown > 0) ventCooldown--;
+    if (ventCooldown > 0) ventCooldown--;
+    if (killCooldown > 0) killCooldown--;
 
-  if (meetingCalled) {
-    resolveMeeting();
+    if (meetingCalled) {
+      resolveMeeting();
+    }
+
+    arduboy.clear();
+    drawRoom();
+    drawEntities();
+    arduboy.display();
   }
-
-  arduboy.clear();
-  drawRoom();
-  drawEntities();
-  arduboy.display();
 }
